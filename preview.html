@@ -1,0 +1,2344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Thai Blessing Dance Queue System</title>
+
+<style>
+:root{
+  --gold:#c99a3d;
+  --brown:#5b412d;
+  --green:#3e7b58;
+  --red:#a34b42;
+  --line:#eadfce;
+  --bg:#f7f1e8;
+  --card:#fffdf9;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,"Microsoft YaHei",sans-serif;
+  background:var(--bg);
+  color:var(--brown);
+}
+
+.wrap{
+  max-width:1400px;
+  margin:auto;
+  padding:20px;
+}
+
+h1{
+  margin:0 0 4px;
+  font-size:28px;
+}
+
+.sub{
+  color:#8c8178;
+  font-size:14px;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:flex-start;
+  margin-bottom:18px;
+}
+
+.stats{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.stat{
+  background:#fff;
+  border:1px solid var(--line);
+  padding:9px 13px;
+  border-radius:20px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1.1fr;
+  gap:18px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 8px 25px rgba(90,65,45,.08);
+}
+
+.card h2{
+  margin:0;
+  padding:17px 18px;
+  border-bottom:1px solid var(--line);
+  font-size:19px;
+}
+
+.content{
+  padding:18px;
+}
+
+label{
+  display:block;
+  font-size:12px;
+  color:#887d73;
+  margin-bottom:6px;
+}
+
+input,
+select,
+textarea,
+button{
+  font:inherit;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px 11px;
+  background:#fff;
+}
+
+input,
+select,
+textarea{
+  width:100%;
+}
+
+textarea{
+  min-height:72px;
+  resize:vertical;
+  line-height:1.45;
+}
+
+button{
+  cursor:pointer;
+  font-weight:700;
+}
+
+button:disabled{
+  cursor:not-allowed;
+  opacity:.55;
+}
+
+.primary{
+  background:var(--gold);
+  color:#fff;
+  border:none;
+}
+
+.dark{
+  background:var(--brown);
+  color:#fff;
+  border:none;
+}
+
+.green{
+  background:var(--green);
+  color:#fff;
+  border:none;
+}
+
+.danger{
+  color:var(--red);
+  background:#fff6f5;
+}
+
+.row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:10px;
+  margin-bottom:12px;
+  align-items:end;
+}
+
+.form{
+  display:grid;
+  grid-template-columns:1fr 1fr auto;
+  gap:10px;
+  margin-bottom:14px;
+  align-items:end;
+}
+
+.toolbar{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+
+.stage{
+  display:grid;
+  grid-template-columns:1fr 180px;
+  gap:14px;
+  align-items:center;
+  background:#fff8df;
+  border:1px solid #ead7a1;
+  border-radius:15px;
+  padding:18px;
+  margin-bottom:15px;
+}
+
+.number{
+  font-size:58px;
+  font-weight:900;
+  letter-spacing:3px;
+}
+
+.stageBtns{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.stageBtns button{
+  width:100%;
+  padding:12px;
+}
+
+.voicePreview{
+  margin-top:8px;
+  padding:10px;
+  background:#fff;
+  border:1px dashed #d9c27c;
+  border-radius:10px;
+  font-size:13px;
+  line-height:1.5;
+}
+
+.editor{
+  margin-top:13px;
+}
+
+.help{
+  font-size:12px;
+  color:#8c8178;
+  margin-top:5px;
+}
+
+.tableWrap{
+  max-height:520px;
+  overflow:auto;
+  border:1px solid var(--line);
+  border-radius:12px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,
+td{
+  padding:11px 9px;
+  border-bottom:1px solid #efe6da;
+  text-align:left;
+  font-size:14px;
+}
+
+th{
+  position:sticky;
+  top:0;
+  background:#fff9f1;
+  font-size:12px;
+  color:#8c8178;
+}
+
+.badge{
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:700;
+}
+
+.waiting{
+  background:#f1ece5;
+}
+
+.calling{
+  background:#fff0c6;
+  color:#8b6419;
+}
+
+.done{
+  background:#e6f3ea;
+  color:#326a4c;
+}
+
+.callingRow{
+  background:#fff9df;
+}
+
+.doneRow{
+  opacity:.6;
+}
+
+.check{
+  width:38px;
+  height:38px;
+  padding:0;
+  color:var(--green);
+}
+
+.callButton{
+  width:42px;
+  height:38px;
+  padding:0;
+}
+
+.site-footer{
+  margin-top:18px;
+  text-align:center;
+  font-size:13px;
+  color:#8c8178;
+  padding:14px 8px 4px;
+  border-top:1px solid var(--line);
+}
+
+@media(max-width:950px){
+  .grid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:650px){
+
+  .wrap{
+    padding:10px;
+  }
+
+  .header{
+    flex-direction:column;
+  }
+
+  .form{
+    grid-template-columns:1fr;
+  }
+
+  .stage{
+    grid-template-columns:1fr;
+  }
+
+  .number{
+    font-size:45px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+  <!-- HEADER -->
+
+  <div class="header">
+
+    <div>
+      <h1>Thai Blessing Dance Queue System</h1>
+      <div class="sub">
+        Four-Faced Buddha Blessing Dance
+      </div>
+    </div>
+
+    <div class="stats">
+
+      <div class="stat">
+        Total
+        <b id="total">0</b>
+      </div>
+
+      <div class="stat">
+        Waiting
+        <b id="waiting">0</b>
+      </div>
+
+      <div class="stat">
+        Completed
+        <b id="done">0</b>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="grid">
+
+
+    <!-- SALES / REGISTRATION -->
+
+    <section class="card">
+
+      <h2>
+        Sales / Registration
+      </h2>
+
+      <div class="content">
+
+
+        <!-- STARTING NUMBER -->
+
+        <div class="row">
+
+          <div>
+
+            <label>
+              Starting Number
+            </label>
+
+            <input
+              id="startNumber"
+              type="number"
+              min="1"
+              value="2601"
+            >
+
+            <div class="help">
+              Default starting number: 2601
+            </div>
+
+          </div>
+
+          <button id="saveStart">
+            Save Starting Number
+          </button>
+
+        </div>
+
+
+        <!-- REGISTRATION -->
+
+        <div class="form">
+
+          <div>
+
+            <label>
+              Queue Number
+            </label>
+
+            <input
+              id="queueNo"
+              readonly
+            >
+
+          </div>
+
+
+          <div>
+
+            <label>
+              Number of Dancers
+            </label>
+
+            <select id="dancers">
+
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+
+            </select>
+
+          </div>
+
+
+          <button
+            id="add"
+            class="primary"
+          >
+            Register
+          </button>
+
+        </div>
+
+
+        <!-- TOOLS -->
+
+        <div class="toolbar">
+
+          <button id="export">
+            Export CSV
+          </button>
+
+          <button
+            id="clear"
+            class="danger"
+          >
+            Clear Today's Records
+          </button>
+
+        </div>
+
+
+        <!-- SALES TABLE -->
+
+        <div class="tableWrap">
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>Queue No.</th>
+                <th>Dancers</th>
+                <th>Status</th>
+                <th>Registration Time</th>
+                <th>Call</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="salesBody"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- DANCE TROUPE -->
+
+    <section class="card">
+
+      <h2>
+        Dance Troupe / Operation
+      </h2>
+
+      <div class="content">
+
+
+        <!-- CURRENT CALL -->
+
+        <div class="stage">
+
+          <div>
+
+            <div
+              style="
+                font-size:12px;
+                color:#8c8178;
+              "
+            >
+              Current Number
+            </div>
+
+
+            <div
+              id="currentNo"
+              class="number"
+            >
+              ---
+            </div>
+
+
+            <div>
+              Dancers Required:
+              <b id="currentDancers">-</b>
+            </div>
+
+
+            <div
+              id="preview"
+              class="voicePreview"
+            >
+              Waiting for call
+            </div>
+
+          </div>
+
+
+          <div class="stageBtns">
+
+            <button
+              id="call"
+              class="dark"
+            >
+              🔊 Bilingual Call
+            </button>
+
+
+            <button
+              id="finish"
+              class="green"
+            >
+              ✓ Mark as Completed
+            </button>
+
+
+            <button id="next">
+              Next Number
+            </button>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- CHINESE ANNOUNCEMENT -->
+
+        <div class="editor">
+
+          <label>
+            Chinese Announcement (Editable)
+          </label>
+
+          <textarea id="zhTemplate">请 {number} 号善信及其 {dancers} 位舞者到四面佛祖前献舞，谢谢</textarea>
+
+          <div class="help">
+            Queue numbers are read digit by digit.
+            Example: 2601 → 二 六 零 一
+          </div>
+
+        </div>
+
+
+
+        <!-- ENGLISH ANNOUNCEMENT -->
+
+        <div class="editor">
+
+          <label>
+            English Announcement (Editable)
+          </label>
+
+          <textarea id="enTemplate">Please, devotee number {number} and the {dancers} dancers, proceed to the Four-Faced Buddha for the blessing dance. Thank you.</textarea>
+
+          <div class="help">
+            Queue numbers are read digit by digit.
+            Example: 2601 → two six zero one
+          </div>
+
+        </div>
+
+
+
+        <!-- TROUPE TABLE -->
+
+        <div
+          class="tableWrap"
+          style="margin-top:14px"
+        >
+
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>Queue No.</th>
+                <th>Dancers</th>
+                <th>Status</th>
+                <th>Complete</th>
+              </tr>
+
+            </thead>
+
+            <tbody id="troupeBody"></tbody>
+
+          </table>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+
+  <!-- FOOTER -->
+
+  <footer class="site-footer">
+    三宝佛光寺 · Lord Buddha Temple
+  </footer>
+
+</div>
+
+
+
+<script>
+
+(function(){
+
+  const KEY =
+    'blessing_queue_v5';
+
+  const START =
+    'blessing_start_v5';
+
+  const ZH =
+    'blessing_zh_v5';
+
+  const EN =
+    'blessing_en_v5';
+
+
+  let records = [];
+
+
+  try{
+
+    records =
+      JSON.parse(
+        localStorage.getItem(KEY) || '[]'
+      );
+
+  }catch(e){
+
+    records = [];
+
+  }
+
+
+  let startNumber =
+    parseInt(
+      localStorage.getItem(START) || '2601',
+      10
+    );
+
+
+  let zhTemplate =
+    localStorage.getItem(ZH)
+    ||
+    '请 {number} 号善信及其 {dancers} 位舞者到四面佛祖前献舞，谢谢';
+
+
+  let enTemplate =
+    localStorage.getItem(EN)
+    ||
+    'Please, devotee number {number} and the {dancers} dancers, proceed to the Four-Faced Buddha for the blessing dance. Thank you.';
+
+
+  let currentId =
+    (
+      records.find(
+        function(r){
+          return r.status === 'calling';
+        }
+      )
+      ||
+      {}
+    ).id
+    ||
+    null;
+
+
+
+  function el(id){
+
+    return document.getElementById(id);
+
+  }
+
+
+
+  function save(){
+
+    localStorage.setItem(
+      KEY,
+      JSON.stringify(records)
+    );
+
+  }
+
+
+
+  function nextNumber(){
+
+    if(!records.length){
+
+      return String(startNumber);
+
+    }
+
+
+    let max =
+      startNumber - 1;
+
+
+    records.forEach(
+
+      function(r){
+
+        max =
+          Math.max(
+            max,
+            parseInt(r.number,10) || 0
+          );
+
+      }
+
+    );
+
+
+    return String(
+      max + 1
+    );
+
+  }
+
+
+
+  /*
+  ===========================
+  NUMBER SPEECH
+  ===========================
+  */
+
+
+  function zhDigits(number){
+
+    const map = {
+
+      '0':'零',
+      '1':'一',
+      '2':'二',
+      '3':'三',
+      '4':'四',
+      '5':'五',
+      '6':'六',
+      '7':'七',
+      '8':'八',
+      '9':'九'
+
+    };
+
+
+    return String(number)
+
+      .split('')
+
+      .map(
+        function(n){
+          return map[n] || n;
+        }
+      )
+
+      .join(' ');
+
+  }
+
+
+
+  function enDigits(number){
+
+    const map = {
+
+      '0':'zero',
+      '1':'one',
+      '2':'two',
+      '3':'three',
+      '4':'four',
+      '5':'five',
+      '6':'six',
+      '7':'seven',
+      '8':'eight',
+      '9':'nine'
+
+    };
+
+
+    return String(number)
+
+      .split('')
+
+      .map(
+        function(n){
+          return map[n] || n;
+        }
+      )
+
+      .join(' ');
+
+  }
+
+
+
+  function voiceZh(record){
+
+    return zhTemplate
+
+      .replace(
+        /\{number\}/g,
+        zhDigits(record.number)
+      )
+
+      .replace(
+        /\{dancers\}/g,
+        record.dancers
+      );
+
+  }
+
+
+
+  function voiceEn(record){
+
+    return enTemplate
+
+      .replace(
+        /\{number\}/g,
+        enDigits(record.number)
+      )
+
+      .replace(
+        /\{dancers\}/g,
+        record.dancers
+      );
+
+  }
+
+
+
+  /*
+  ===========================
+  STATUS
+  ===========================
+  */
+
+
+  function statusText(status){
+
+    if(status === 'done'){
+
+      return 'Completed';
+
+    }
+
+
+    if(status === 'calling'){
+
+      return 'Calling';
+
+    }
+
+
+    return 'Waiting';
+
+  }
+
+
+
+  function statusClass(status){
+
+    if(status === 'done'){
+
+      return 'done';
+
+    }
+
+
+    if(status === 'calling'){
+
+      return 'calling';
+
+    }
+
+
+    return 'waiting';
+
+  }
+
+
+
+  function time(timestamp){
+
+    return new Date(timestamp)
+
+      .toLocaleTimeString(
+
+        'en-SG',
+
+        {
+          hour:'2-digit',
+          minute:'2-digit'
+        }
+
+      );
+
+  }
+
+
+
+  function current(){
+
+    return records.find(
+
+      function(r){
+
+        return r.id === currentId;
+
+      }
+
+    )
+    ||
+    null;
+
+  }
+
+
+
+  /*
+  ===========================
+  RENDER
+  ===========================
+  */
+
+
+  function render(){
+
+
+    el('queueNo').value =
+      nextNumber();
+
+
+    el('startNumber').value =
+      startNumber;
+
+
+    /*
+    Lock starting number once
+    registration has started.
+    */
+
+    el('startNumber').disabled =
+      records.length > 0;
+
+
+    el('saveStart').disabled =
+      records.length > 0;
+
+
+    el('zhTemplate').value =
+      zhTemplate;
+
+
+    el('enTemplate').value =
+      enTemplate;
+
+
+
+    /*
+    Statistics
+    */
+
+
+    el('total').textContent =
+      records.length;
+
+
+    el('waiting').textContent =
+
+      records.filter(
+
+        function(r){
+
+          return r.status !== 'done';
+
+        }
+
+      ).length;
+
+
+    el('done').textContent =
+
+      records.filter(
+
+        function(r){
+
+          return r.status === 'done';
+
+        }
+
+      ).length;
+
+
+
+    /*
+    SALES TABLE
+    */
+
+
+    if(records.length){
+
+      el('salesBody').innerHTML =
+
+        records.map(
+
+          function(r){
+
+
+            const callButton =
+
+              r.status === 'done'
+
+              ?
+
+              '<span style="color:#aaa">—</span>'
+
+              :
+
+              '<button class="callButton" data-call="' +
+              r.id +
+              '" title="Call this number">🔊</button>';
+
+
+
+            return `
+
+              <tr class="
+                ${r.status === 'calling' ? 'callingRow' : ''}
+                ${r.status === 'done' ? 'doneRow' : ''}
+              ">
+
+                <td>
+                  <b>${r.number}</b>
+                </td>
+
+                <td>
+                  ${r.dancers}
+                </td>
+
+                <td>
+
+                  <span class="badge ${statusClass(r.status)}">
+
+                    ${statusText(r.status)}
+
+                  </span>
+
+                </td>
+
+                <td>
+
+                  ${time(r.createdAt)}
+
+                </td>
+
+                <td>
+
+                  ${callButton}
+
+                </td>
+
+              </tr>
+
+            `;
+
+          }
+
+        ).join('');
+
+    }else{
+
+      el('salesBody').innerHTML = `
+
+        <tr>
+
+          <td
+            colspan="5"
+            style="
+              text-align:center;
+              color:#8c8178;
+              padding:28px;
+            "
+          >
+
+            No registrations yet
+
+          </td>
+
+        </tr>
+
+      `;
+
+    }
+
+
+
+    /*
+    TROUPE TABLE
+    */
+
+
+    if(records.length){
+
+      el('troupeBody').innerHTML =
+
+        records.map(
+
+          function(r){
+
+
+            const completeButton =
+
+              r.status === 'done'
+
+              ?
+
+              '✓'
+
+              :
+
+              '<button class="check" data-done="' +
+              r.id +
+              '">✓</button>';
+
+
+
+            return `
+
+              <tr class="
+                ${r.status === 'calling' ? 'callingRow' : ''}
+                ${r.status === 'done' ? 'doneRow' : ''}
+              ">
+
+                <td>
+
+                  <b>${r.number}</b>
+
+                </td>
+
+                <td>
+
+                  <b>${r.dancers}</b>
+
+                </td>
+
+                <td>
+
+                  <span class="badge ${statusClass(r.status)}">
+
+                    ${statusText(r.status)}
+
+                  </span>
+
+                </td>
+
+                <td>
+
+                  ${completeButton}
+
+                </td>
+
+              </tr>
+
+            `;
+
+          }
+
+        ).join('');
+
+    }else{
+
+      el('troupeBody').innerHTML = `
+
+        <tr>
+
+          <td
+            colspan="4"
+            style="
+              text-align:center;
+              color:#8c8178;
+              padding:28px;
+            "
+          >
+
+            Waiting for registration
+
+          </td>
+
+        </tr>
+
+      `;
+
+    }
+
+
+
+    /*
+    CURRENT NUMBER
+    */
+
+
+    const record =
+      current();
+
+
+    if(record){
+
+      el('currentNo').textContent =
+        record.number;
+
+
+      el('currentDancers').textContent =
+        record.dancers;
+
+
+      el('preview').innerHTML = `
+
+        <div>
+
+          ${voiceZh(record)}
+
+        </div>
+
+        <div
+          style="
+            margin-top:6px;
+            color:#7f746b;
+          "
+        >
+
+          ${voiceEn(record)}
+
+        </div>
+
+      `;
+
+    }else{
+
+      el('currentNo').textContent =
+        '---';
+
+
+      el('currentDancers').textContent =
+        '-';
+
+
+      el('preview').textContent =
+        'Waiting for call';
+
+    }
+
+
+
+    /*
+    COMPLETE BUTTONS
+    */
+
+
+    document
+
+      .querySelectorAll(
+        '[data-done]'
+      )
+
+      .forEach(
+
+        function(button){
+
+          button.onclick =
+            function(){
+
+              markDone(
+
+                this.getAttribute(
+                  'data-done'
+                )
+
+              );
+
+            };
+
+        }
+
+      );
+
+
+
+    /*
+    SALES INDIVIDUAL CALL BUTTONS
+    */
+
+
+    document
+
+      .querySelectorAll(
+        '[data-call]'
+      )
+
+      .forEach(
+
+        function(button){
+
+          button.onclick =
+            function(){
+
+              callSpecific(
+
+                this.getAttribute(
+                  'data-call'
+                )
+
+              );
+
+            };
+
+        }
+
+      );
+
+  }
+
+
+
+  /*
+  ===========================
+  SPEECH
+  ===========================
+  */
+
+
+  function speakRecord(record){
+
+    if(!record){
+
+      return;
+
+    }
+
+
+    const chinese =
+      voiceZh(record);
+
+
+    const english =
+      voiceEn(record);
+
+
+
+    el('preview').innerHTML = `
+
+      <div>
+
+        ${chinese}
+
+      </div>
+
+      <div
+        style="
+          margin-top:6px;
+          color:#7f746b;
+        "
+      >
+
+        ${english}
+
+      </div>
+
+    `;
+
+
+
+    if(
+      'speechSynthesis'
+      in
+      window
+    ){
+
+      speechSynthesis.cancel();
+
+
+
+      /*
+      Chinese first
+      */
+
+
+      const zhVoice =
+        new SpeechSynthesisUtterance(
+          chinese
+        );
+
+
+      zhVoice.lang =
+        'zh-CN';
+
+
+      zhVoice.rate =
+        0.86;
+
+
+      zhVoice.pitch =
+        1;
+
+
+      /*
+      English second
+      */
+
+
+      const enVoice =
+        new SpeechSynthesisUtterance(
+          english
+        );
+
+
+      enVoice.lang =
+        'en-US';
+
+
+      enVoice.rate =
+        0.90;
+
+
+      enVoice.pitch =
+        1;
+
+
+
+      speechSynthesis.speak(
+        zhVoice
+      );
+
+
+      speechSynthesis.speak(
+        enVoice
+      );
+
+    }else{
+
+      alert(
+
+        chinese +
+
+        '\n\n' +
+
+        english
+
+      );
+
+    }
+
+  }
+
+
+
+  /*
+  ===========================
+  SPECIFIC CALL FROM SALES
+  ===========================
+  */
+
+
+  function callSpecific(id){
+
+    const record =
+
+      records.find(
+
+        function(r){
+
+          return r.id === id;
+
+        }
+
+      );
+
+
+    if(!record){
+
+      return;
+
+    }
+
+
+    if(
+      record.status === 'done'
+    ){
+
+      return;
+
+    }
+
+
+
+    /*
+    Reset previous calling number
+    */
+
+
+    records.forEach(
+
+      function(r){
+
+        if(
+          r.status === 'calling'
+          &&
+          r.id !== id
+        ){
+
+          r.status =
+            'waiting';
+
+        }
+
+      }
+
+    );
+
+
+    record.status =
+      'calling';
+
+
+    currentId =
+      record.id;
+
+
+    save();
+
+    render();
+
+    speakRecord(record);
+
+  }
+
+
+
+  /*
+  ===========================
+  NORMAL QUEUE CALL
+  ===========================
+  */
+
+
+  function ensureCurrent(){
+
+    let record =
+      current();
+
+
+    if(
+      record
+      &&
+      record.status !== 'done'
+    ){
+
+      return record;
+
+    }
+
+
+
+    records.forEach(
+
+      function(r){
+
+        if(
+          r.status === 'calling'
+        ){
+
+          r.status =
+            'waiting';
+
+        }
+
+      }
+
+    );
+
+
+    record =
+
+      records.find(
+
+        function(r){
+
+          return r.status === 'waiting';
+
+        }
+
+      )
+      ||
+      null;
+
+
+
+    if(record){
+
+      record.status =
+        'calling';
+
+
+      currentId =
+        record.id;
+
+
+      save();
+
+    }else{
+
+      currentId =
+        null;
+
+    }
+
+
+    render();
+
+
+    return record;
+
+  }
+
+
+
+  /*
+  ===========================
+  COMPLETE
+  ===========================
+  */
+
+
+  function markDone(id){
+
+    const record =
+
+      records.find(
+
+        function(r){
+
+          return r.id === id;
+
+        }
+
+      );
+
+
+    if(!record){
+
+      return;
+
+    }
+
+
+    record.status =
+      'done';
+
+
+    record.doneAt =
+      Date.now();
+
+
+    if(
+      currentId === id
+    ){
+
+      currentId =
+        null;
+
+    }
+
+
+    save();
+
+    render();
+
+  }
+
+
+
+  /*
+  ===========================
+  START NUMBER
+  ===========================
+  */
+
+
+  el('saveStart').onclick =
+    function(){
+
+
+      if(records.length){
+
+        alert(
+          "There are existing registrations. Please clear today's records before changing the starting number."
+        );
+
+        return;
+
+      }
+
+
+      const value =
+
+        parseInt(
+
+          el('startNumber').value,
+
+          10
+
+        );
+
+
+      if(
+        !Number.isInteger(value)
+        ||
+        value < 1
+      ){
+
+        alert(
+          'Please enter a valid starting number.'
+        );
+
+        return;
+
+      }
+
+
+      startNumber =
+        value;
+
+
+      localStorage.setItem(
+
+        START,
+
+        String(value)
+
+      );
+
+
+      render();
+
+    };
+
+
+
+  /*
+  ===========================
+  REGISTER
+  ===========================
+  */
+
+
+  el('add').onclick =
+    function(){
+
+
+      records.push({
+
+        id:
+
+          String(Date.now())
+
+          +
+
+          Math.random(),
+
+
+        number:
+
+          nextNumber(),
+
+
+        dancers:
+
+          parseInt(
+
+            el('dancers').value,
+
+            10
+
+          ),
+
+
+        status:
+
+          'waiting',
+
+
+        createdAt:
+
+          Date.now(),
+
+
+        doneAt:
+
+          null
+
+      });
+
+
+      save();
+
+      render();
+
+    };
+
+
+
+  /*
+  ===========================
+  MAIN CALL
+  ===========================
+  */
+
+
+  el('call').onclick =
+    function(){
+
+
+      const record =
+        ensureCurrent();
+
+
+      if(!record){
+
+        alert(
+          'There are no numbers waiting to be called.'
+        );
+
+        return;
+
+      }
+
+
+      speakRecord(record);
+
+    };
+
+
+
+  /*
+  ===========================
+  FINISH CURRENT
+  ===========================
+  */
+
+
+  el('finish').onclick =
+    function(){
+
+
+      const record =
+        current();
+
+
+      if(!record){
+
+        alert(
+          'There is no number currently being called.'
+        );
+
+        return;
+
+      }
+
+
+      markDone(
+        record.id
+      );
+
+    };
+
+
+
+  /*
+  ===========================
+  NEXT NUMBER
+  ===========================
+  */
+
+
+  el('next').onclick =
+    function(){
+
+
+      const record =
+        current();
+
+
+      if(
+        record
+        &&
+        record.status === 'calling'
+      ){
+
+        record.status =
+          'waiting';
+
+      }
+
+
+      currentId =
+        null;
+
+
+
+      const nextRecord =
+
+        records.find(
+
+          function(r){
+
+            return r.status === 'waiting';
+
+          }
+
+        );
+
+
+      if(nextRecord){
+
+        nextRecord.status =
+          'calling';
+
+
+        currentId =
+          nextRecord.id;
+
+      }
+
+
+      save();
+
+      render();
+
+    };
+
+
+
+  /*
+  ===========================
+  EDIT CHINESE ANNOUNCEMENT
+  ===========================
+  */
+
+
+  el('zhTemplate').oninput =
+    function(){
+
+
+      zhTemplate =
+        this.value;
+
+
+      localStorage.setItem(
+
+        ZH,
+
+        zhTemplate
+
+      );
+
+
+      const record =
+        current();
+
+
+      if(record){
+
+        el('preview').innerHTML = `
+
+          <div>
+
+            ${voiceZh(record)}
+
+          </div>
+
+          <div
+            style="
+              margin-top:6px;
+              color:#7f746b;
+            "
+          >
+
+            ${voiceEn(record)}
+
+          </div>
+
+        `;
+
+      }
+
+    };
+
+
+
+  /*
+  ===========================
+  EDIT ENGLISH ANNOUNCEMENT
+  ===========================
+  */
+
+
+  el('enTemplate').oninput =
+    function(){
+
+
+      enTemplate =
+        this.value;
+
+
+      localStorage.setItem(
+
+        EN,
+
+        enTemplate
+
+      );
+
+
+      const record =
+        current();
+
+
+      if(record){
+
+        el('preview').innerHTML = `
+
+          <div>
+
+            ${voiceZh(record)}
+
+          </div>
+
+          <div
+            style="
+              margin-top:6px;
+              color:#7f746b;
+            "
+          >
+
+            ${voiceEn(record)}
+
+          </div>
+
+        `;
+
+      }
+
+    };
+
+
+
+  /*
+  ===========================
+  CLEAR RECORDS
+  ===========================
+  */
+
+
+  el('clear').onclick =
+    function(){
+
+
+      const confirmed =
+        confirm(
+          "Are you sure you want to clear all records for today?"
+        );
+
+
+      if(!confirmed){
+
+        return;
+
+      }
+
+
+      records =
+        [];
+
+
+      currentId =
+        null;
+
+
+      save();
+
+      render();
+
+    };
+
+
+
+  /*
+  ===========================
+  EXPORT CSV
+  ===========================
+  */
+
+
+  el('export').onclick =
+    function(){
+
+
+      const rows = [
+
+        [
+          'Queue Number',
+          'Number of Dancers',
+          'Status',
+          'Registration Time',
+          'Completion Time'
+        ]
+
+      ];
+
+
+
+      records.forEach(
+
+        function(record){
+
+          rows.push([
+
+            record.number,
+
+            record.dancers,
+
+            statusText(
+              record.status
+            ),
+
+            new Date(
+              record.createdAt
+            ).toLocaleString(
+              'en-SG'
+            ),
+
+            record.doneAt
+
+            ?
+
+            new Date(
+              record.doneAt
+            ).toLocaleString(
+              'en-SG'
+            )
+
+            :
+
+            ''
+
+          ]);
+
+        }
+
+      );
+
+
+
+      const csv =
+
+        '\ufeff'
+
+        +
+
+        rows.map(
+
+          function(row){
+
+            return row.map(
+
+              function(value){
+
+                return
+
+                  '"'
+
+                  +
+
+                  String(value)
+
+                    .replace(
+                      /"/g,
+                      '""'
+                    )
+
+                  +
+
+                  '"';
+
+              }
+
+            ).join(',');
+
+          }
+
+        ).join('\n');
+
+
+
+      const blob =
+
+        new Blob(
+
+          [csv],
+
+          {
+            type:
+            'text/csv;charset=utf-8'
+          }
+
+        );
+
+
+
+      const url =
+        URL.createObjectURL(
+          blob
+        );
+
+
+      const link =
+        document.createElement(
+          'a'
+        );
+
+
+      link.href =
+        url;
+
+
+      link.download =
+        'blessing_dance_queue.csv';
+
+
+      link.click();
+
+
+      URL.revokeObjectURL(
+        url
+      );
+
+    };
+
+
+
+  /*
+  Initial render
+  */
+
+
+  render();
+
+
+})();
+
+</script>
+
+</body>
+</html>
